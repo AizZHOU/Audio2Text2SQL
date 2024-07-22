@@ -1,5 +1,4 @@
 # Audio2Text2SQL
-![Static Badge](https://img.shields.io/badge/python-3.10)
 ## 简介
 这是一个通过音频/文本基于LLM得到SQL语句的项目
 ## 安装环境
