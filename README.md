@@ -41,7 +41,7 @@ git clone https://hf-mirror.com/DMetaSoul/Dmeta-embedding-zh
 - 请注意：Dmeta-embedding-zh模型是针对中文文本的，对于英文文本，应考虑使用其他模型。
 
 ## 参考链接
-- Openai的whisper[whisper](https://github.com/openai/whisper)
+- Openai的[whisper](https://github.com/openai/whisper)
 - 更快速的Whisper[faster-whisper](https://github.com/SYSTRAN/faster-whisper)
 - Embedding模型排行榜[mteb/leaderboard](https://huggingface.co/spaces/mteb/leaderboard)
 - 阿里的[DAIL-SQL](https://github.com/beachwang/dail-sql)
