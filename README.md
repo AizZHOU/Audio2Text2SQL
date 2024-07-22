@@ -12,6 +12,7 @@
 ## 安装环境
 ```
 pip install sentence_transformers -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install faster_whisper -i https://pypi.tuna.tsinghua.edu.cn/simple
 pip install openai -i https://pypi.tuna.tsinghua.edu.cn/simple
 pip install SpeechRecognition -i https://pypi.tuna.tsinghua.edu.cn/simple
 pip install baidu-aip -i https://pypi.tuna.tsinghua.edu.cn/simple
