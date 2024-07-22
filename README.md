@@ -1,5 +1,5 @@
 # Audio2Text2SQL
-### 项目简介
+## 项目简介
 
 **项目名称**: 基于LLM的音频/文本SQL语句生成器
 
@@ -11,7 +11,7 @@
 2. **高精度解析**: 使用先进的大语言模型进行自然语言处理，保证解析结果的准确性。
 3. **多数据库支持**: 生成的SQL语句兼容多种数据库系统，如MySQL、PostgreSQL、SQLite等。
 
-**安装环境**
+## 安装环境
 ```
 pip install sentence_transformers -i https://pypi.tuna.tsinghua.edu.cn/simple
 pip install openai -i https://pypi.tuna.tsinghua.edu.cn/simple
