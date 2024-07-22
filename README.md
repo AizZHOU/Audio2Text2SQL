@@ -19,6 +19,24 @@ pip install pynput -i https://pypi.tuna.tsinghua.edu.cn/simple
 python -m pip install pyaudio
 另外的缺啥安啥
 ```
+## 用法
+- 到Hugging Face上下载embedding模型以及ASR模型后替换路径即可开始本项目
+- Embedding模型[DMetaSoul/Dmeta-embedding-zh](https://hf-mirror.com/DMetaSoul/Dmeta-embedding-zh/tree/main)
+- ASR模型[Systran/faster-whisper-small](https://hf-mirror.com/Systran/faster-whisper-small/tree/main)
+
+**或者**
+
+```
+git lfs install
+git clone https://hf-mirror.com/Systran/faster-whisper-small
+git clone https://hf-mirror.com/DMetaSoul/Dmeta-embedding-zh
+```
+
+## 一些细节
+- [all_data_process_unique.json](/dataset/all_data_process_unique.json)文件是从[CSpider](https://taolusi.github.io/CSpider-explorer/)中提取整理得来
+- [Text2SQL](Text2SQL.ipynb)文件展示了从文本生成SQL查询语句的过程
+- 其余文件均为可选的[文本/语音]生成SQL查询过程。其中，后缀为'auto'的文件是自动调用麦克风进行ASR转录并生成SQL查询；后缀为'manual'的文件则需手动点击进行转录，再次点击停止转录后进行ASR转录并生成SQL查询。
+
 
 ---
 通过本项目，我们希望能够降低数据查询的门槛，让更多人能够轻松地从数据中获取所需的信息。期待您的参与与贡献！
