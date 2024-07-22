@@ -1,5 +1,5 @@
 # **Audio2Text2SQL**
-![Static Badge](https://img.shields.io/badge/python-3.10-blue)![Static Badge](https://img.shields.io/badge/Text2SQL-%23FFA500)![Static Badge](https://img.shields.io/badge/Audio2SQL-%2332CD32)![Static Badge](https://img.shields.io/badge/Whisper-%2300FFFF)
+![Static Badge](https://img.shields.io/badge/python-3.10-blue)![Static Badge](https://img.shields.io/badge/Text2SQL-%23FFA500)![Static Badge](https://img.shields.io/badge/Audio2SQL-%2332CD32)
 
 ![框架图](框架_01.png)
 ## 项目简介
