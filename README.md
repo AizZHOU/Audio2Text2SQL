@@ -1,4 +1,4 @@
-# Audio2Text2SQL
+# **Audio2Text2SQL**
 ![框架图](https://github.com/AizZHOU/Audio2Text2SQL/blob/main/%E6%A1%86%E6%9E%B6_01.png)
 ## 项目简介
 
