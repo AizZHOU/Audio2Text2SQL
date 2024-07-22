@@ -1,5 +1,5 @@
 # **Audio2Text2SQL**
-![框架图](https://github.com/AizZHOU/Audio2Text2SQL/blob/main/%E6%A1%86%E6%9E%B6_01.png)
+![框架图](框架_01.png)
 ## 项目简介
 
 该项目旨在通过使用大语言模型（LLM）来实现从音频或文本输入生成SQL语句的功能。通过将用户的自然语言查询转化为结构化的SQL语句，可以大大简化数据查询的过程，尤其适用于不熟悉SQL语法的用户。
