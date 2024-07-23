@@ -10,8 +10,14 @@
 1. **多输入支持**: 支持音频和文本两种输入方式。
 2. **高精度解析**: 使用先进的大语言模型进行自然语言处理，保证解析结果的准确性。
 3. **多数据库支持**: 生成的SQL语句兼容多种数据库系统，如MySQL、PostgreSQL、SQLite等。
+4. **轻量级**: 无需服务器或GPU即可在本地运行
+5. **轻松上手**: 安装包后调整路径即可使用
 
-## 安装环境
+## 创建&安装环境
+```
+conda create -n Audio2Text2SQL python=3.10
+conda activate Audio2Text2SQL
+```
 ```
 pip install sentence_transformers -i https://pypi.tuna.tsinghua.edu.cn/simple
 pip install faster_whisper -i https://pypi.tuna.tsinghua.edu.cn/simple
