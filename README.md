@@ -124,7 +124,7 @@ schema = """
 ## 一些细节
 - [all_data_process_unique.json](/dataset/all_data_process_unique.json)文件是从[CSpider](https://taolusi.github.io/CSpider-explorer/)中提取整理得来
 - [Text2SQL](Text2SQL.ipynb)文件展示了从文本生成SQL查询语句的过程
-- 其余文件均为可选的[文本/语音]生成SQL查询过程。其中，后缀为'auto'的文件是自动调用麦克风进行ASR转录并生成SQL查询；后缀为'manual'的文件则需手动点击进行转录，再次点击停止转录后进行ASR转录并生成SQL查询。
+- 其余文件均为可选的[文本/语音]生成SQL查询过程。其中，后缀为`auto`的文件是自动调用麦克风进行ASR转录并生成SQL查询；后缀为`manual`的文件则需手动点击进行转录，再次点击停止转录后进行ASR转录并生成SQL查询。
 - 本项目的Prompt Engineering主要参考借鉴了[PET-SQL](https://github.com/zhshlii/petsql)以及[DAIL-SQL](https://github.com/beachwang/dail-sql)
 - 为了满足响应速度的需求，我选用了较小的Embedding模型和ASR模型，大家可以根据自己的需要选择不同的模型。
 - 请注意：Dmeta-embedding-zh模型是针对中文文本的，对于英文输入，应考虑使用其他模型。
