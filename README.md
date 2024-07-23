@@ -23,7 +23,21 @@ python -m pip install pyaudio
 另外的缺啥安啥
 ```
 ## 用法
-- 到Hugging Face上下载Embedding模型以及ASR模型后替换路径即可开始本项目
+**1.配置Openai-API以及Baidu-API，如下所示：**
+```
+# Openai-API配置
+AZURE_OPENAI_API_KEY = ''
+AZURE_OPENAI_ENDPOINT = ''
+
+# 加载Baidu-API模型
+BAIDU_APP_ID = ''
+BAIDU_API_KEY = ''
+BAIDU_SECRET_KEY = ''
+```
+百度API接口：[百度智能云](https://login.bce.baidu.com/?account=&redirect=http%3A%2F%2Fconsole.bce.baidu.com%2Fai%2F%3F_%3D1559654571070%26fromai%3D1#/ai/speech/app/list)
+
+**2.到Hugging Face上下载Embedding模型以及ASR模型后替换路径即可开始本项目**
+
 - Embedding模型[DMetaSoul/Dmeta-embedding-zh](https://hf-mirror.com/DMetaSoul/Dmeta-embedding-zh/tree/main)
 - ASR模型[Systran/faster-whisper-small](https://hf-mirror.com/Systran/faster-whisper-small/tree/main)
 
@@ -33,6 +47,11 @@ python -m pip install pyaudio
 git lfs install
 git clone https://hf-mirror.com/Systran/faster-whisper-small
 git clone https://hf-mirror.com/DMetaSoul/Dmeta-embedding-zh
+```
+
+## 可以更改的参数
+```
+
 ```
 
 ## 一些细节
