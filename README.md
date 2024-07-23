@@ -50,8 +50,30 @@ git clone https://hf-mirror.com/DMetaSoul/Dmeta-embedding-zh
 ```
 
 ## 可以更改的参数
+
+**1. Few-shot Leaning使用的例子个数**
+
+```
+# 更改`k`参数即可
+k = 5
+top_k_indices = distances.argsort()[:k]
+examples = "\n".join([f"### {questions[idx]}\n{queries[idx]}\n" for idx in top_k_indices]).strip()
 ```
 
+**2.Stage-2中基于SQL相似度进行检索的阈值**
+```
+# 更改`threshold`参数即可
+threshold = 0.4
+combined_scores = compute_combined_scores(distances, mask_similarities, threshold)
+combined_scores = sorted(combined_scores, key=lambda x: x[1])
+top_pairs = [x for x in combined_scores if x[2] >= threshold]
+```
+
+**3.录音相关参数**
+- `timeout` 参数用于设定操作的最大等待时间。
+- `phrase_time_limit` 参数用于设定单个语音片段的最长录制时间。
+```
+audio = r.listen(source, timeout=5, phrase_time_limit=10)
 ```
 
 ## 一些细节
@@ -60,7 +82,7 @@ git clone https://hf-mirror.com/DMetaSoul/Dmeta-embedding-zh
 - 其余文件均为可选的[文本/语音]生成SQL查询过程。其中，后缀为'auto'的文件是自动调用麦克风进行ASR转录并生成SQL查询；后缀为'manual'的文件则需手动点击进行转录，再次点击停止转录后进行ASR转录并生成SQL查询。
 - 本项目的Prompt Engineering主要参考了[PET-SQL](https://github.com/zhshlii/petsql)以及[DAIL-SQL](https://github.com/beachwang/dail-sql)
 - 为了满足响应速度的需求，我选用了较小的Embedding模型和ASR模型，大家可以根据自己的需要选择不同的模型。
-- 请注意：Dmeta-embedding-zh模型是针对中文文本的，对于英文文本，应考虑使用其他模型。
+- 请注意：Dmeta-embedding-zh模型是针对中文文本的，对于英文输入，应考虑使用其他模型。
 
 ## 参考链接
 - Openai的[whisper](https://github.com/openai/whisper)
