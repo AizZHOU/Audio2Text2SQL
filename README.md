@@ -55,6 +55,7 @@ git clone https://hf-mirror.com/DMetaSoul/Dmeta-embedding-zh
 
 ```
 # 更改`k`参数即可
+
 k = 5
 top_k_indices = distances.argsort()[:k]
 examples = "\n".join([f"### {questions[idx]}\n{queries[idx]}\n" for idx in top_k_indices]).strip()
@@ -63,6 +64,7 @@ examples = "\n".join([f"### {questions[idx]}\n{queries[idx]}\n" for idx in top_k
 **2.Stage-2中基于SQL相似度进行检索的阈值**
 ```
 # 更改`threshold`参数即可
+
 threshold = 0.4
 combined_scores = compute_combined_scores(distances, mask_similarities, threshold)
 combined_scores = sorted(combined_scores, key=lambda x: x[1])
@@ -80,6 +82,7 @@ audio = r.listen(source, timeout=5, phrase_time_limit=10)
 - 对将要使用的数据库的架构和数据库中引用的数据信息进行替换
 ```
 # 对"### 给定以下数据库架构:"以及"### 以下是相关数据库中引用的一些数据信息:"后面的信息进行修改即可
+
 def generate_prompt(examples, question):
     return f"""
 ### 以下是基于类似问题提供的一些问题和相应的SQL查询的示例对：
