@@ -25,6 +25,7 @@ pip install openai -i https://pypi.tuna.tsinghua.edu.cn/simple
 pip install SpeechRecognition -i https://pypi.tuna.tsinghua.edu.cn/simple
 pip install baidu-aip -i https://pypi.tuna.tsinghua.edu.cn/simple
 pip install pynput -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install chardet -i https://pypi.tuna.tsinghua.edu.cn/simple
 python -m pip install pyaudio
 另外的缺啥安啥
 ```
