@@ -1,0 +1,7 @@
+sentence_transformers
+faster_whisper
+openai
+SpeechRecognition
+baidu-aip
+gradio
+chardet
