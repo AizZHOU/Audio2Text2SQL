@@ -17,8 +17,8 @@
 
 ## 创建&安装环境
 ```
-conda create -n Audio2Text2SQL python=3.10
-conda activate Audio2Text2SQL
+conda create -n Speech2Text2SQL python=3.10
+conda activate Speech2Text2SQL
 ```
 ```
 pip install sentence_transformers -i https://pypi.tuna.tsinghua.edu.cn/simple
