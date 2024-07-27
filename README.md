@@ -2,6 +2,8 @@
 ![Static Badge](https://img.shields.io/badge/python-3.10-blue)![Static Badge](https://img.shields.io/badge/Text2SQL-%23FFA500)![Static Badge](https://img.shields.io/badge/Speech2SQL-%2332CD32)
 
 ![框架图](框架_01.png)
+## New
+> 项目试用Demo:[Speech2Text2SQL](https://f507d4de7cd94ba0bd.gradio.live)
 ## 项目简介
 
 该项目旨在通过使用大语言模型（LLM）来实现从音频或文本输入生成SQL语句的功能。通过将用户的自然语言查询转化为结构化的SQL语句，可以大大简化数据查询的过程，尤其适用于不熟悉SQL语法的用户。
@@ -85,9 +87,8 @@ top_pairs = [x for x in combined_scores if x[2] >= threshold]
 audio = r.listen(source, timeout=5, phrase_time_limit=10)
 ```
 
-**4.数据库相关参数**
+**4.数据库相关参数(在后缀带`diy`的文件中这一部分不用配置)**
 - 对将要使用的数据库的架构和数据库中引用的数据信息进行替换
-- 在后缀带`diy`的文件中这一部分不用配置
 ```
 # 对"### 给定以下数据库架构:"以及"### 以下是相关数据库中引用的一些数据信息:"后面的信息进行修改即可
 
@@ -134,7 +135,7 @@ schema = """
 - [Text2SQL](Text2SQL.ipynb)文件展示了从文本生成SQL查询语句的过程
 - 其余文件均为可选的[文本/语音]生成SQL查询过程。其中，后缀为`auto`的文件是自动调用麦克风进行ASR转录并生成SQL查询；后缀为`manual`的文件则需手动点击进行转录，再次点击停止转录后进行ASR转录并生成SQL查询。
 - 后缀为`diy`的文件支持输入创表语句以及数据表内的具体信息
-- 通过这个[Demo](app.py)文件可以构建基于Gradio的Demo,可以通过[requirements](requirements.txt)安装环境
+- 通过这个[Demo](Demo/app.py)文件可以构建基于Gradio的Demo,可以通过[requirements](Demo/requirements.txt)配置环境
 - 本项目的Prompt Engineering主要参考借鉴了[PET-SQL](https://github.com/zhshlii/petsql)以及[DAIL-SQL](https://github.com/beachwang/dail-sql)
 - 为了满足响应速度的需求，我选用了较小的Embedding模型和ASR模型，大家可以根据自己的需要选择不同的模型。
 - 请注意：Dmeta-embedding-zh模型是针对中文文本的，对于英文输入，应考虑使用其他模型。同理，all_data_process_unique.json也需要从[Spider](https://yale-lily.github.io/spider)中提取整理，当然也可以用其他的数据集。
