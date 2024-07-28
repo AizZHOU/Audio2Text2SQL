@@ -3,7 +3,7 @@
 
 ![框架图](框架_01.png)
 ## New
-> 项目试用Demo
+> 项目试用Demo:[Speech2Text2SQL_public](https://www.modelscope.cn/studios/ssadasad/Speech2Text2SQL_public)
 ## 项目简介
 
 该项目旨在通过使用大语言模型（LLM）来实现从音频或文本输入生成SQL语句的功能。通过将用户的自然语言查询转化为结构化的SQL语句，可以大大简化数据查询的过程，尤其适用于不熟悉SQL语法的用户。
