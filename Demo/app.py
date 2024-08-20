@@ -17,10 +17,13 @@ import speech_recognition as sr
 from sklearn.metrics.pairwise import euclidean_distances
 from pydub import AudioSegment
 from io import BytesIO
+from flask import Flask, jsonify
+import pika
+import json
 
 # OPENAI-API配置
-AZURE_OPENAI_API_KEY = 'OPENAI_API_KEY'
-AZURE_OPENAI_ENDPOINT = 'OPENAI_ENDPOINT'
+AZURE_OPENAI_API_KEY = '4213f3298d82495a8fdaf5e838402493'
+AZURE_OPENAI_ENDPOINT = 'https://yidu-resource-4.openai.azure.com/'
 os.environ['AZURE_OPENAI_API_KEY'] = AZURE_OPENAI_API_KEY
 os.environ['AZURE_OPENAI_ENDPOINT'] = AZURE_OPENAI_ENDPOINT
 os.environ['OPENAI_API_VERSION'] = '2024-05-01-preview'
@@ -30,6 +33,24 @@ client = AzureOpenAI(
     api_version="2024-05-01-preview",
     azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT")
 )
+
+# flask http 应用
+app = Flask(__name__)
+
+# RabbitMQ连接配置
+RABBITMQ_HOST = '172.17.0.4'
+RABBITMQ_PORT = 5672
+RABBITMQ_USER = 'admin'
+RABBITMQ_PASS = '123456'
+RABBITMQ_QUEUE = 'bi_queue'
+
+# 连接到RabbitMQ
+connection = pika.BlockingConnection(
+    pika.ConnectionParameters(host=RABBITMQ_HOST, port=RABBITMQ_PORT,
+                              credentials=pika.PlainCredentials(RABBITMQ_USER, RABBITMQ_PASS))
+)
+channel = connection.channel()
+
 
 def get_completion(prompt, model="gpt-4o"):
     messages = [{"role": "user", "content": prompt}]
@@ -50,10 +71,10 @@ def encode_questions(embedding_model, questions):
 def load_model(model_path):
     return SentenceTransformer(model_path)
 
-embedding_model_path = 'model/Dmeta-embedding-zh'
+embedding_model_path = '../model/Dmeta-embedding-zh'
 embedding_model = load_model(embedding_model_path)
 
-all_data_path = 'dataset/all_data_process_unique.json'
+all_data_path = '../dataset/all_data_process_unique.json'
 all_data = load_json(all_data_path)
 
 questions = [item['question'] for item in all_data]
@@ -261,6 +282,25 @@ def demo_fn(input_choice, audio_input, text_input, create_table_sql, database_re
     final_sql, transcribed_text, final_prompt = process_input(input_choice, input_data, create_table_sql, database_records)
     return final_prompt, transcribed_text, final_sql
 
+
+# 定义一个回调函数来处理队列中的消息
+def callback(ch, method, properties, body):
+    # 将消息体从字节串解码为 UTF-8 字符串
+    message_str = body.decode('utf-8')
+    message_dict = json.loads(message_str)
+    my_question = message_dict['prompt']
+    create_table_sql = message_dict['createTableSqlList']
+    database_records = message_dict['defaultRows']
+    # aigc任务生成
+    response_final, prompt_final = main(my_question, create_table_sql, database_records)
+    print(create_table_sql)
+    print(database_records)
+    print('-----分隔符')
+    print(response_final)
+    print(prompt_final)
+    # 向java后台发送消息
+
+
 demo = gr.Interface(
     fn=demo_fn,
     inputs=[
@@ -279,5 +319,13 @@ demo = gr.Interface(
     description="通过语音或文字输入问题，生成相应的SQL查询。",
 )
 
+# 开始消费队列中的消息
+channel.basic_consume(queue=RABBITMQ_QUEUE, on_message_callback=callback, auto_ack=True)
+
+
 if __name__ == "__main__":
-    demo.launch()
+    # 在后台线程中开始消费RabbitMQ消息
+    import threading
+    threading.Thread(target=lambda: channel.start_consuming()).start()
+    # 运行Flask应用
+    app.run(debug=True, host='0.0.0.0', port=5001)

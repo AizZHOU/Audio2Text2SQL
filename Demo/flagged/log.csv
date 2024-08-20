@@ -1,0 +1,171 @@
+选择输入方式,audio_input,请输入您的问题,输入创建表的SQL语句,输入数据表的具体数据信息,Final-Prompt,语音识别结果,生成的SQL查询,flag,username,timestamp
+语音输入,,查询设备信息,"'-- 创建库
+create database if not exists bi;
+
+use bi;
+
+# 创表语句
+CREATE TABLE t_di_bind_device (
+                                  id INT PRIMARY KEY AUTO_INCREMENT COMMENT '唯一id',
+                                  user_id VARCHAR(20) NOT NULL COMMENT '用户手机号，一个用户可绑定多个设备',
+                                  mac_id CHAR(16) NOT NULL UNIQUE COMMENT '设备id，设备id长度一般为16位，每个设备都有唯一id',
+                                  mac_type VARCHAR(50) COMMENT '设备型号',
+                                  channel_id VARCHAR(50) COMMENT '设备渠道',
+                                  bind TINYINT(1) NOT NULL COMMENT '设备绑定状态，设备绑定：1；设备解绑：0。一个设备仅有一个主绑定用户',
+                                  created TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '记录创建时间',
+                                  modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '记录修改时间'
+);
+
+CREATE TABLE t_device_attributes (
+                                     mac_id CHAR(16) NOT NULL UNIQUE COMMENT '设备id，设备id长度一般为16位，每个设备都有唯一id',
+                                     mac_type VARCHAR(50) COMMENT '设备型号',
+                                     supplier_id VARCHAR(50) COMMENT '厂商id',
+                                     supplier_name VARCHAR(100) COMMENT '厂商名称',
+                                     channel_name VARCHAR(100) COMMENT '渠道名称',
+                                     channel_id VARCHAR(50) COMMENT '渠道id',
+                                     province_code VARCHAR(10) COMMENT '省码',
+                                     province_name VARCHAR(100) COMMENT '省份名称',
+                                     PRIMARY KEY (mac_id)
+);
+
+CREATE TABLE t_user_packages (
+                                 order_id CHAR(32) NOT NULL PRIMARY KEY COMMENT '订单id，每个订单都有唯一id',
+                                 mac_id CHAR(16) NOT NULL COMMENT '设备id，设备id长度一般为16位，每个设备都有唯一id',
+                                 order_user VARCHAR(20) NOT NULL COMMENT '订购手机号，一个设备可绑定一个手机号、开通一种套餐',
+                                 province_code VARCHAR(10) COMMENT '省码',
+                                 city_code VARCHAR(10) COMMENT '市码',
+                                 created TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                                 package_id CHAR(32) NOT NULL COMMENT '套餐id，每一类套餐具有唯一id，长度一般为32位',
+                                 storage_type TINYINT(1) NOT NULL COMMENT '套餐类型，全天套餐：1，事件套餐：2',
+                                 state TINYINT(1) NOT NULL COMMENT '套餐状态，当前套餐处于生效状态：1，当前套餐处于失效状态：0'
+);
+
+CREATE TABLE t_device_online_status (
+                                        id INT PRIMARY KEY AUTO_INCREMENT COMMENT '序号',
+                                        mac_id CHAR(16) NOT NULL COMMENT '设备id',
+                                        login TINYINT(1) NOT NULL COMMENT '设备上下线状态，设备上线：1，设备下线：0',
+                                        created TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                                        modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间'
+);
+
+
+CREATE TABLE t_mobile_surveillance_events (
+                                              event_serial_id INT PRIMARY KEY AUTO_INCREMENT COMMENT '埋点记录id',
+                                              event_id VARCHAR(100) NOT NULL COMMENT '埋点名称，包括Live_watch_time(直播观看时长),icloud_watch_time(云回放观看时长云回放观看时长),Live_play_success(直播成功),Live_play_fail(直播失败),live_play_loading_time(直播加载时间)',
+                                              event_duration BIGINT COMMENT '事件持续时长，单位：毫秒；根据event_id的不同含义，可能是用户观看时长、直播加载时长或为0',
+                                              event_created TIMESTAMP NOT NULL COMMENT '事件创建时间',
+                                              user_id VARCHAR(20) COMMENT '用户手机号',
+                                              phone_type VARCHAR(50) COMMENT '手机类型',
+                                              app_version VARCHAR(20) COMMENT '和家亲app版本号',
+                                              network_type VARCHAR(10) COMMENT '网络，分为WIFI、4G等',
+                                              mac_id CHAR(16) NOT NULL COMMENT '设备id',
+                                              extra TEXT COMMENT '其他',
+                                              created TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '该条记录的创建时间',
+                                              modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '该条记录的修改时间'
+);","'use bi;
+INSERT INTO t_di_bind_device (id, user_id, mac_id, mac_type, channel_id, bind, created, modified)
+VALUES
+    (1, '13500000001', '4650000000008886', 'ZNIPC', '34500000000000080', 1, '2023-12-13 00:00:03.0', '2023-12-13 00:00:03.0'),
+    (2, '13600000002', '7067000000004287', 'CMCC-V7B', '45620000000000092', 1, '2023-12-13 00:00:04.0', '2023-12-13 00:00:04.0'),
+    (3, '13700000003', '5078000000009631', 'AP6PCM0', '45840000000000016', 1, '2023-12-13 00:00:13.0', '2023-12-13 00:00:13.0'),
+    (4, '13800000004', '9114000000005238', 'G55MI', '47000000000000012', 1, '2023-12-13 00:00:14.0', '2023-12-13 00:00:14.0'),
+    (5, '13900000005', '9495000000006273', 'JA-A43', '45840000000000016', 0, '2023-12-13 00:00:19.0', '2023-12-13 00:00:19.0');
+
+INSERT INTO t_device_attributes (mac_id, mac_type, supplier_id, supplier_name, channel_name, channel_id, province_code, province_name)
+VALUES
+    ('4650000000008886', 'ZNIPC', '101', '中国移动', '浙江一级', '34500000000000080', '33', '浙江'),
+    ('7067000000004287', 'CMCC-V7B', '102', '华为', '浙江一级', '45620000000000092', '11', '北京'),
+    ('5078000000009631', 'AP6PCM0', '103', '小米', '电商渠道', '45840000000000016', '23', '黑龙江'),
+    ('9114000000005238', 'G55MI', '104', '海尔', '全国渠道', '47000000000000012', '-1', '全国'),
+    ('9495000000006273', 'JA-A43', '105', 'TCL', '直销渠道', '99999999999999999', '44', '广东');
+
+INSERT INTO t_user_packages (order_id, mac_id, order_user, province_code, city_code, created, package_id, storage_type, state)
+VALUES
+    ('order001', '4650000000008886', '13500000001', '0', '0', '2024-03-18 13:28:38.0', 'pkg001', 1, 1),
+    ('order002', '7067000000004287', '13600000002', '0', '0', '2024-03-19 14:29:49.0', 'pkg002', 1, 1),
+    ('order003', '5078000000009631', '13700000003', '0', '0', '2024-03-20 15:30:50.0', 'pkg003', 2, 1),
+    ('order004', '9114000000005238', '13800000004', '0', '0', '2024-03-21 16:31:51.0', 'pkg004', 1, 0),
+    ('order005', '9495000000006273', '13900000005', '0', '0', '2024-03-22 17:32:52.0', 'pkg005', 2, 1);
+
+INSERT INTO t_device_online_status (id, mac_id, login, created, modified)
+VALUES
+    (1, '4650000000008886', 1, '2024-07-01 00:00:00.0', '2024-07-01 03:24:30.0'),
+    (2, '7067000000004287', 1, '2024-07-01 00:01:00.0', '2024-07-01 23:55:40.0'),
+    (3, '5078000000009631', 0, '2024-07-01 00:02:00.0', '2024-07-01 23:20:40.0'),
+    (4, '9114000000005238', 1, '2024-07-01 00:03:00.0', '2024-07-01 00:05:00.0'),
+    (5, '9495000000006273', 0, '2024-07-01 00:04:00.0', '2024-07-01 00:06:00.0');
+
+INSERT INTO t_mobile_surveillance_events (event_serial_id, event_id, event_duration, event_created, user_id, phone_type, app_version, network_type, mac_id, created, modified)
+VALUES
+    (1, 'Live_watch_time', 252, '2024-06-30 23:59:00', '13500000001', 'ANDROID', '8.2.0', 'WiFi', '4650000000008886', '2024-07-01 00:00:00', '2024-07-01 00:00:00'),
+    (2, 'icloud_watch_time', 1413, '2024-06-30 23:58:00', '13600000002', 'IOS', '8.4.0', '4G', '7067000000004287', '2024-07-01 00:01:00', '2024-07-01 00:01:00'),
+    (3, 'Live_play_success', 0, '2024-06-30 23:57:00', '13700000003', 'ANDROID', '8.5.0', 'WiFi', '5078000000009631', '2024-07-01 00:02:00', '2024-07-01 00:02:00'),
+    (4, 'Live_play_fail', 0, '2024-06-30 23:56:00', '13800000004', 'IOS', '8.2.0', '4G', '9114000000005238', '2024-07-01 00:03:00', '2024-07-01 00:03:00'),
+    (5, 'live_play_loading_time', 2187, '2024-06-30 23:55:00', '13900000005', 'ANDROID', '8.4.0', 'WiFi', '9495000000006273', '2024-07-01 00:04:00', '2024-07-01 00:04:00');
+
+",'----,'----,ERROR：创建表的SQL语句不能为空。,,,2024-08-19 11:56:53.153458
+文字输入,,查询设备信息,"'-- 创建库
+create database if not exists bi;
+
+use bi;
+
+# 创表语句
+CREATE TABLE t_di_bind_device (
+                                  id INT PRIMARY KEY AUTO_INCREMENT COMMENT '唯一id',
+                                  user_id VARCHAR(20) NOT NULL COMMENT '用户手机号，一个用户可绑定多个设备',
+                                  mac_id CHAR(16) NOT NULL UNIQUE COMMENT '设备id，设备id长度一般为16位，每个设备都有唯一id',
+                                  mac_type VARCHAR(50) COMMENT '设备型号',
+                                  channel_id VARCHAR(50) COMMENT '设备渠道',
+                                  bind TINYINT(1) NOT NULL COMMENT '设备绑定状态，设备绑定：1；设备解绑：0。一个设备仅有一个主绑定用户',
+                                  created TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '记录创建时间',
+                                  modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '记录修改时间'
+);
+
+CREATE TABLE t_device_attributes (
+                                     mac_id CHAR(16) NOT NULL UNIQUE COMMENT '设备id，设备id长度一般为16位，每个设备都有唯一id',
+                                     mac_type VARCHAR(50) COMMENT '设备型号',
+                                     supplier_id VARCHAR(50) COMMENT '厂商id',
+                                     supplier_name VARCHAR(100) COMMENT '厂商名称',
+                                     channel_name VARCHAR(100) COMMENT '渠道名称',
+                                     channel_id VARCHAR(50) COMMENT '渠道id',
+                                     province_code VARCHAR(10) COMMENT '省码',
+                                     province_name VARCHAR(100) COMMENT '省份名称',
+                                     PRIMARY KEY (mac_id)
+);
+
+CREATE TABLE t_user_packages (
+                                 order_id CHAR(32) NOT NULL PRIMARY KEY COMMENT '订单id，每个订单都有唯一id',
+                                 mac_id CHAR(16) NOT NULL COMMENT '设备id，设备id长度一般为16位，每个设备都有唯一id',
+                                 order_user VARCHAR(20) NOT NULL COMMENT '订购手机号，一个设备可绑定一个手机号、开通一种套餐',
+                                 province_code VARCHAR(10) COMMENT '省码',
+                                 city_code VARCHAR(10) COMMENT '市码',
+                                 created TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                                 package_id CHAR(32) NOT NULL COMMENT '套餐id，每一类套餐具有唯一id，长度一般为32位',
+                                 storage_type TINYINT(1) NOT NULL COMMENT '套餐类型，全天套餐：1，事件套餐：2',
+                                 state TINYINT(1) NOT NULL COMMENT '套餐状态，当前套餐处于生效状态：1，当前套餐处于失效状态：0'
+);
+
+CREATE TABLE t_device_online_status (
+                                        id INT PRIMARY KEY AUTO_INCREMENT COMMENT '序号',
+                                        mac_id CHAR(16) NOT NULL COMMENT '设备id',
+                                        login TINYINT(1) NOT NULL COMMENT '设备上下线状态，设备上线：1，设备下线：0',
+                                        created TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                                        modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间'
+);
+
+
+CREATE TABLE t_mobile_surveillance_events (
+                                              event_serial_id INT PRIMARY KEY AUTO_INCREMENT COMMENT '埋点记录id',
+                                              event_id VARCHAR(100) NOT NULL COMMENT '埋点名称，包括Live_watch_time(直播观看时长),icloud_watch_time(云回放观看时长云回放观看时长),Live_play_success(直播成功),Live_play_fail(直播失败),live_play_loading_time(直播加载时间)',
+                                              event_duration BIGINT COMMENT '事件持续时长，单位：毫秒；根据event_id的不同含义，可能是用户观看时长、直播加载时长或为0',
+                                              event_created TIMESTAMP NOT NULL COMMENT '事件创建时间',
+                                              user_id VARCHAR(20) COMMENT '用户手机号',
+                                              phone_type VARCHAR(50) COMMENT '手机类型',
+                                              app_version VARCHAR(20) COMMENT '和家亲app版本号',
+                                              network_type VARCHAR(10) COMMENT '网络，分为WIFI、4G等',
+                                              mac_id CHAR(16) NOT NULL COMMENT '设备id',
+                                              extra TEXT COMMENT '其他',
+                                              created TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '该条记录的创建时间',
+                                              modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '该条记录的修改时间'
+);",,'----,'----,ERROR：创建表的SQL语句不能为空。,,,2024-08-19 11:57:34.270699
+文字输入,,查询设备信息,"CREATE TABLE t_device_online_status (id INT PRIMARY KEY AUTO_INCREMENT COMMENT '序号',mac_id CHAR(16) NOT NULL COMMENT '设备id',login TINYINT(1) NOT NULL COMMENT '设备上下线状态，设备上线：1，设备下线：0',created TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间');","t_device_online_status (id [1, 2, 3], mac_id [0012*************4057, 0012*************3747, 0012*************5913],login [1, 1, 1],created [2024-07-01 00:00:00.0, 2024-07-01 00:00:00.0, 2024-07-01 00:00:00.0],modified [2024-07-01 03:24:30.0, 2024-07-01 23:55:40.0, 2024-07-01 23:20:40.0]);",'----,'----,ERROR：创建表的SQL语句不能为空。,,,2024-08-19 12:00:11.481007
