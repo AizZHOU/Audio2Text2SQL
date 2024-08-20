@@ -141,10 +141,14 @@ def filter_prompt_lines(prompt, found_tables):
 def add_comment_to_sql(sql):
     return "\n".join(["# " + line for line in sql.strip().split("\n")])
 
+def process_sql(sql):
+    sql = sql.replace('`', '')
+    sql = re.sub(r"ENGINE=.*? COLLATE=.*?(?=\n|$)", '', sql)
+    sql = re.sub(r'\)(\s*CREATE TABLE|\s*$)', r');\1', sql)
+    return sql.strip()
+
 def extract_table_info(sql):
-    # Regex for capturing table creation and its content
     table_regex = re.compile(r'CREATE TABLE\s+(\w+(?:\.\w+)?)\s*\((.*?)\);', re.DOTALL | re.IGNORECASE)
-    # Regex for capturing column names, allowing for complex definitions
     column_regex = re.compile(r'(\w+)\s+[^\s,]+.*?(?:,|$)', re.IGNORECASE)
     tables = table_regex.findall(sql)
     table_info = []
@@ -152,7 +156,7 @@ def extract_table_info(sql):
     for table in tables:
         table_name = table[0]
         columns = column_regex.findall(table[1])
-        filtered_columns = [col for col in columns if 'PRIMARY' not in col.upper()]
+        filtered_columns = [col for col in columns if 'PRIMARY' not in col.upper() and 'UNIQUE' not in col.upper() and 'KEY' not in col.upper()]
         table_info.append(f"{table_name} ({', '.join(filtered_columns)})")
 
     return table_info
@@ -175,7 +179,7 @@ def format_sql_statements(sql):
 
 def main(your_question, create_table_sql, database_records):
     if not create_table_sql.strip():
-        return "ERROR: 创建表的SQL语句不能为空。", "", ""
+        return "ERROR: 创建表的SQL语句不能为空。", ""
 
     your_question_embedding = encode_questions(embedding_model, [your_question])
     distances = compute_distances(your_question_embedding, question_embeddings)
@@ -183,7 +187,8 @@ def main(your_question, create_table_sql, database_records):
     top_k_indices = distances.argsort()[:k]
     examples = "\n".join([f"### {questions[idx]}\n{queries[idx]}\n" for idx in top_k_indices]).strip()
 
-    formatted_sql = format_sql_statements(create_table_sql)
+    process_sql1 = process_sql(create_table_sql)
+    formatted_sql = format_sql_statements(process_sql1)
     table_info = extract_table_info(formatted_sql)
 
     create_table_sql_prompt = add_comment_to_sql(formatted_sql)
@@ -288,18 +293,16 @@ def callback(ch, method, properties, body):
     # 将消息体从字节串解码为 UTF-8 字符串
     message_str = body.decode('utf-8')
     message_dict = json.loads(message_str)
-    my_question = message_dict['prompt']
+    prompt = message_dict['prompt']
     create_table_sql = message_dict['createTableSqlList']
     database_records = message_dict['defaultRows']
-    # aigc任务生成
-    response_final, prompt_final = main(my_question, create_table_sql, database_records)
+    response_final, prompt_final = main(prompt, create_table_sql, database_records)
     print(create_table_sql)
     print(database_records)
     print('-----分隔符')
     print(response_final)
     print(prompt_final)
     # 向java后台发送消息
-
 
 demo = gr.Interface(
     fn=demo_fn,
@@ -324,6 +327,15 @@ channel.basic_consume(queue=RABBITMQ_QUEUE, on_message_callback=callback, auto_a
 
 
 if __name__ == "__main__":
+    # demo.launch()
+    # prompt to sql
+    # input_choice = '文字输入'
+    # input_data = '查询设备记录'
+    # create_table_sql = "CREATE TABLE t_device_online_status (id INT PRIMARY KEY AUTO_INCREMENT COMMENT '序号',mac_id CHAR(16) NOT NULL COMMENT '设备id',login TINYINT(1) NOT NULL COMMENT '设备上下线状态，设备上线：1，设备下线：0',created TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间');"
+    # database_records = "t_device_online_status (id [1, 2, 3], mac_id [0012*************4057, 0012*************3747, 0012*************5913],login [1, 1, 1],created [2024-07-01 00:00:00.0, 2024-07-01 00:00:00.0, 2024-07-01 00:00:00.0],modified [2024-07-01 03:24:30.0, 2024-07-01 23:55:40.0, 2024-07-01 23:20:40.0]);"
+    # final_sql, transcribed_text, final_prompt = process_input(input_choice, input_data, create_table_sql,database_records)
+    # print(final_sql)
+
     # 在后台线程中开始消费RabbitMQ消息
     import threading
     threading.Thread(target=lambda: channel.start_consuming()).start()
