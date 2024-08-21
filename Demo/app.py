@@ -1,23 +1,13 @@
-from sentence_transformers import SentenceTransformer
-from tqdm.autonotebook import tqdm, trange
-import os
 from openai import AzureOpenAI
-import json
 from aip import AipSpeech
 import gradio as gr
-import numpy as np
-from transformers import pipeline
 from sentence_transformers import SentenceTransformer
 import os
-import json
 import re
-import time
-import logging
-import speech_recognition as sr
 from sklearn.metrics.pairwise import euclidean_distances
 from pydub import AudioSegment
 from io import BytesIO
-from flask import Flask, jsonify
+from flask import Flask
 import pika
 import json
 
@@ -38,7 +28,8 @@ client = AzureOpenAI(
 app = Flask(__name__)
 
 # RabbitMQ连接配置
-RABBITMQ_HOST = '172.17.0.4'
+RABBITMQ_HOST = '120.76.47.158'
+RABBITMQ_VHOST = 'my_vhost'
 RABBITMQ_PORT = 5672
 RABBITMQ_USER = 'admin'
 RABBITMQ_PASS = '123456'
@@ -47,7 +38,8 @@ RABBITMQ_QUEUE = 'bi_queue'
 # 连接到RabbitMQ
 connection = pika.BlockingConnection(
     pika.ConnectionParameters(host=RABBITMQ_HOST, port=RABBITMQ_PORT,
-                              credentials=pika.PlainCredentials(RABBITMQ_USER, RABBITMQ_PASS))
+                              credentials=pika.PlainCredentials(RABBITMQ_USER, RABBITMQ_PASS),
+                              virtual_host=RABBITMQ_VHOST)
 )
 channel = connection.channel()
 
@@ -71,10 +63,10 @@ def encode_questions(embedding_model, questions):
 def load_model(model_path):
     return SentenceTransformer(model_path)
 
-embedding_model_path = '../model/Dmeta-embedding-zh'
+embedding_model_path = '/app/model/Dmeta-embedding-zh'
 embedding_model = load_model(embedding_model_path)
 
-all_data_path = '../dataset/all_data_process_unique.json'
+all_data_path = '/app/dataset/all_data_process_unique.json'
 all_data = load_json(all_data_path)
 
 questions = [item['question'] for item in all_data]
@@ -211,7 +203,7 @@ def main(your_question, create_table_sql, database_records):
 
     table_names = list(set(table_names))
     column_set = list(set(column_set))
-    found_tables = [table for table in table_names if table in response_extract]
+    found_tables = [table for table in table_names if table in response_extract and table.startswith('t_')]
 
     response_mask = response_extract
     for table in table_names:
@@ -293,6 +285,7 @@ def callback(ch, method, properties, body):
     # 将消息体从字节串解码为 UTF-8 字符串
     message_str = body.decode('utf-8')
     message_dict = json.loads(message_str)
+    query_id = message_dict['id']
     prompt = message_dict['prompt']
     create_table_sql = message_dict['createTableSqlList']
     database_records = message_dict['defaultRows']
@@ -302,7 +295,17 @@ def callback(ch, method, properties, body):
     print('-----分隔符')
     print(response_final)
     print(prompt_final)
+    print(query_id)
     # 向java后台发送消息
+    result = {}
+    result['id'] = query_id
+    result['generateSql'] = response_final
+    print('-----分隔符')
+    print(response_final)
+    print(query_id)
+    result = json.dumps(result)
+    print(result)
+    channel.basic_publish(exchange='bi_exchange',  routing_key='update_sql',  body=result)
 
 demo = gr.Interface(
     fn=demo_fn,
@@ -340,4 +343,4 @@ if __name__ == "__main__":
     import threading
     threading.Thread(target=lambda: channel.start_consuming()).start()
     # 运行Flask应用
-    app.run(debug=True, host='0.0.0.0', port=5001)
+    app.run(debug=True, host='localhost', port=5001)
